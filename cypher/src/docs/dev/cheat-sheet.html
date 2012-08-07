@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>
+    </title>
+    <meta name="description">
+    <meta name="viewport" content="width=device-width">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="js/modernizr-2.5.3.js">
+    </script>
+    <link href="css/main.css" rel="stylesheet" media="print, screen" type="text/css">
+  </head>
+  <body>
+    <header>
+      <div class="mid">
+        <img class="neo4j-logo" src="images/neo4j-green-tag-web.png"><h1>
+           Cypher Cheat Sheet 
+        </h1>
+      </div>
+    </header>
+    <div class="main">
+      <div class="mid">
+        <div class="page" id="page_1">
+          <div class="col leftCol">
+            <div class="blk" id="cypher-intro">
+              <h3>
+                 Cypher is the declarative query language for Neo4j, the world’s leading graph database. 
+              </h3>
+              <ul>
+                <li>
+                   Cypher matches patterns of nodes and relationship in the graph, to extract information or modify the data.<br>
+                </li>
+                <li>
+                   Cypher has the concept of identifiers which denote named, bound elements and parameters. 
+                </li>
+                <li>
+                   Cypher can mutate graph data by creating, updating, and removing nodes, relationships, and properties. 
+                </li>
+              </ul>
+              <p>
+                 You can try cypher snippets live in the Neo4j Console at <a href="http://console.neo4j.org" target="_blank">http://console.neo4j.org</a>. 
+              </p>
+            </div>
+            <div class="blk" id="read-only-query-structure">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                       Read-Only Query Structure 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                      <pre>START me=node:people(name='Andres')<br>MATCH me-[:FRIEND]->friend<br>WHERE friend.age > 18<br>RETURN me, friend.name<br>ORDER BY friend.age asc<br>SKIP 5 LIMIT 10</pre>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="blk" id="start">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                      <em class="code">START</em>
+                    </th>
+                    <th>
+                       Meaning 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                       START n=node(id,[id2,id3]) 
+                    </td>
+                    <td>
+                       Load the node with id id into n 
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       START n=node:indexName(<br>
+                      key=&quot;value&quot;)<br>
+                    </td>
+                    <td>
+                       Query the index for an exact value and put the result into n<br>
+                      <br>
+                      Use node_auto_index for the auto-index<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       START n=node:indexName(<br>
+                      &quot;lucene query&quot;)<br>
+                    </td>
+                    <td>
+                       Query the index using a full Lucene query and put the result in n<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       START n=node(*)<br>
+                    </td>
+                    <td>
+                       Load all nodes<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       START m=node(1), n=node(2)<br>
+                    </td>
+                    <td>
+                       Multiple start points<br>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="blk" id="return">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                      <em class="code">RETURN</em>
+                    </th>
+                    <th>
+                       Meaning 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                       RETURN *<br>
+                    </td>
+                    <td>
+                       Return all named nodes, relationships and identifiers<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       RETURN expr AS alias<br>
+                    </td>
+                    <td>
+                       Set result column name as alias<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       RETURN distinct expr<br>
+                    </td>
+                    <td>
+                       Return unique values for expr<br>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col rightCol">
+            <div class="blk" id="match">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                      <em class="code">MATCH</em>
+                    </th>
+                    <th>
+                       Meaning 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n--&gt;m<br>
+                    </td>
+                    <td>
+                       A pattern where n has outgoing relationships<br>
+                      to another node,<br>
+                      regardless of the<br>
+                      relationship type<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n--&gt;m&lt;--o<br>
+                    </td>
+                    <td>
+                       A pattern with n having an outgoing relationship to m, and m having incoming relationship from o<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH p=n--&gt;m&lt;--o<br>
+                    </td>
+                    <td>
+                       Store the path going from n to o over m into the path identifier p<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH p = shortestPath( n-[:KNOWS*3]-&gt;m )<br>
+                    </td>
+                    <td>
+                       Find the shortest path between n and m of type KNOWS of at most length 3<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH p = allShortestPaths( n-[:KNOWS*3]-&gt;m )<br>
+                    </td>
+                    <td>
+                       Find all the shortest paths between n and m of type KNOWS of at most length 3<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n--m<br>
+                    </td>
+                    <td>
+                       n has relationship<br>
+                      in any direction to m<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n-[:KNOWS]-&gt;m<br>
+                    </td>
+                    <td>
+                       The outgoing relationship<br>
+                      between n and m<br>
+                      has to be of KNOWS<br>
+                      relationship type<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n-[:KNOWS|LOVES]-m<br>
+                    </td>
+                    <td>
+                       n has KNOWS or LOVES relationship to m<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n-[r]-&gt;m<br>
+                    </td>
+                    <td>
+                       An outgoing relationship from n to m, and store the relationship in r<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n-[r?]-&gt;m<br>
+                    </td>
+                    <td>
+                       The relationship is optional<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n-[*1..5]-&gt;m<br>
+                    </td>
+                    <td>
+                       A multi step path between n and m of one to five steps away<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n-[*]-&gt;m<br>
+                    </td>
+                    <td>
+                       A pattern where n has a relationship to m unbound number of steps away<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MATCH n-[?:KNOWS*..5]-&gt;m<br>
+                    </td>
+                    <td>
+                       An optional relationship between n and m that is of KNOWS relationship type, and between one and five steps long.<br>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="page" id="page_2">
+          <div class="col leftCol">
+            <div class="blk" id="read-write-return">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                       Read-Write-Return Query Structure 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                      <pre>START emil=node:people(name='Emil')<br>MATCH emil-[:MARRIED_TO]-madde<br>CREATE/CCRATE UNIQUE UNIQUE <br>emil-[:DAD]-&gt;(noomi {name:&quot;Noomi&quot;})&lt;-[:MOM]-madde<br>DELETE emil.spare_time<br>SET emil.happy=true<br>RETURN noomi</pre>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="blk" id="create">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                      <em class="code">CREATE</em>
+                    </th>
+                    <th>
+                      Meaning
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                      CREATE n={name :&quot;Name&quot; } CREATE (n {name :&quot;Name&quot; })
+                    </td>
+                    <td>
+                      Creates the node with the given properties
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      CREATE n = {map}
+                    </td>
+                    <td>
+                      Creates node from map parameter
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      CREATE n = {manyMaps}
+                    </td>
+                    <td>
+                      Creates many nodes from parameter with coll of maps
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      CREATE n-[:KNOWS]-&gt;m
+                    </td>
+                    <td>
+                      Creates the relationship with the given type and direction
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      CREATE (n {name:'Andres'})- [:KNOWS {since: 2007}] -&gt;m
+                    </td>
+                    <td>
+                      Creates the relationship with the given type, direction &amp; properties
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="blk" id="delete">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                      <em class="code">DELETE</em>
+                    </th>
+                    <th>
+                      Meaning
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                      DELETE n<br>
+                      DELETE rel
+                    </td>
+                    <td>
+                      Deletes the node, relationship
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      DELETE n.prop
+                    </td>
+                    <td>
+                      Removes the property
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="blk" id="create-unique">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                      <em class="code">CREATE UNIQUE</em>
+                    </th>
+                    <th>
+                      Meaning
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                      CREATE UNIQUE n-[:KNOWS]-&gt;m
+                    </td>
+                    <td>
+                      Tries to match the pattern. creates the missing pieces if the match fails
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      CREATE UNIQUE n-[:KNOWS]-&gt;(m {name:&quot;Name&quot;})
+                    </td>
+                    <td>
+                      Tries to match a node with the property name set to &quot;Name&quot;. creates the node and sets the property if it can't be found
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      CREATE UNIQUE n-[:LOVES {since: 2007}]-&gt;m
+                    </td>
+                    <td>
+                      Tries to find the relationship with the given type, direction and attributes, creates it if not found
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col rightCol">
+            <div class="blk" id="set">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                      <em class="code">SET</em>
+                    </th>
+                    <th>
+                      Meaning
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                      SET n.prop = value
+                    </td>
+                    <td>
+                      Updates or creates the property prop with the given value
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      SET n = {map}
+                    </td>
+                    <td>
+                      Updates the properties with the given map parameter
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      SET n.prop = null
+                    </td>
+                    <td>
+                      Deletes the property prop
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="blk" id="predicates">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                       Predicates 
+                    </th>
+                    <th>
+                       Meaning 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                       NOT pred1 AND/OR pred2<br>
+                    </td>
+                    <td>
+                       Boolean operators for predicates<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       ALL(x in coll : pred)<br>
+                    </td>
+                    <td>
+                       TRUE if pred is TRUE for all values in coll<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       ANY(x in coll : pred)<br>
+                    </td>
+                    <td>
+                       TRUE if pred is TRUE for at least one value in coll<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       NONE(x in coll : pred)<br>
+                    </td>
+                    <td>
+                       TRUE if pred returns FALSE for all values in coll<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       SINGLE(x in coll : pred)<br>
+                    </td>
+                    <td>
+                       TRUE if pred returns TRUE for a single value in coll<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       identifier IS NULL<br>
+                    </td>
+                    <td>
+                       TRUE if identifier is NULL<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       n.prop? = value<br>
+                    </td>
+                    <td>
+                       TRUE if n.prop = value or n is NULL or n.prop does not exist<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       n.prop! = value<br>
+                    </td>
+                    <td>
+                       TRUE if n.prop = value, FALSE if n is NULL or n.prop does not exist<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       n =~ /regexp/<br>
+                    </td>
+                    <td>
+                       Regular expression<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       e1 &lt;&gt; e2, e1 &lt; e2, e1 = e2<br>
+                    </td>
+                    <td>
+                       Comparison operators<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       has(n.prop)<br>
+                    </td>
+                    <td>
+                       Checks if property exists<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       n-[:TYPE]-&gt;m<br>
+                    </td>
+                    <td>
+                       Filters on existence of relationship<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       expr IN coll&nbsp;Content for td 
+                    </td>
+                    <td>
+                       Checks for existence of expr in coll<br>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="page" id="page_3">
+          <div class="col leftCol">
+            <div class="blk" id="expressions">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                       Expressions 
+                    </th>
+                    <th>
+                       Meaning 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                       [a-zA-Z0-9_], 'some na-me'<br>
+                    </td>
+                    <td>
+                       allowed identifiers (or quoted)<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       n + / - * % m<br>
+                    </td>
+                    <td>
+                       Arithmetic operators, &quot;+&quot; also works on strings and collections<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       [42,&quot;Hello&quot;,'World',<br>
+                      {p}]<br>
+                    </td>
+                    <td>
+                       A collection<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       {param}<br>
+                    </td>
+                    <td>
+                       Parameter value, passed into the query execution as map {param: &quot;value&quot;,... }<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       a--&gt;()&lt;--b<br>
+                    </td>
+                    <td>
+                      A path pattern<br><br>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="blk" id="functions">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                       Functions 
+                    </th>
+                    <th>
+                       Meaning 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                       HEAD(coll)<br>
+                    </td>
+                    <td>
+                      First element of coll<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       TAIL(coll)<br>
+                    </td>
+                    <td>
+                       coll except first element<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       LAST(coll)<br>
+                    </td>
+                    <td>
+                      Last element of coll<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       TYPE(rel)<br>
+                    </td>
+                    <td>
+                       relationship type of rel<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       ID(node)<br>
+                      ID(relationship)<br>
+                    </td>
+                    <td>
+                       id of node or relationship<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       COALESCE(expr,<br>
+                      default) 
+                    </td>
+                    <td>
+                      Returns default if expr is null otherwise expr<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       RANGE(start,end<br>
+                      [,step])<br>
+                    </td>
+                    <td>
+                      Creates a range from start to end (inclusive) with a optional step<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       ABS(v)<br>ROUND(v)<br>SQRT(v)<br>SIGN(v)<br>
+                    </td>
+                    <td>
+                      Math functions<br>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col rightCol">
+            <div class="blk" id="path-functions">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                       Path functions 
+                    </th>
+                    <th>
+                       Meaning 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                       NODES(path)<br>
+                    </td>
+                    <td>
+                       Returns the nodes in path<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       RELS(path)<br>
+                    </td>
+                    <td>
+                       Returns the relationships in path<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       LENGTH(path)<br>
+                    </td>
+                    <td>
+                       Returns the length of path<br>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="blk" id="aggregate-functions">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>
+                       Aggregate functions 
+                    </th>
+                    <th>
+                       Meaning 
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                       COUNT([distinct] expr)<br>
+                    </td>
+                    <td>
+                       Returns the number of non-null values in expr<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       COUNT(*)<br>
+                    </td>
+                    <td>
+                       Returns the number of values aggregated over<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       SUM(expr)<br>
+                    </td>
+                    <td>
+                       Returns the sum of all values in expr. Throws exception for non-numeric values<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       AVG(expr)<br>
+                    </td>
+                    <td>
+                       Returns the average of all values in expr<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MAX(expr)<br>
+                    </td>
+                    <td>
+                       Returns the largest value in expr<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       MIN(expr)<br>
+                    </td>
+                    <td>
+                       Returns the smallest values in expr<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       COLLECT(expr)<br>
+                    </td>
+                    <td>
+                       Returns an coll containing all values in expr<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       FILTER( x in coll : predicate )<br>
+                    </td>
+                    <td>
+                       Returns a all the elements in coll that match the given predicate<br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                       EXTRACT( x in coll : expr)<br>
+                    </td>
+                    <td>
+                       Applies the expression once for every element in coll<br>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="page" id="page_4">
+          <div class="col leftCol">
+            <div class="blk" id="foreach">
+              <h3>
+                 FOREACH 
+              </h3>
+              <p>
+                <em class="code">FOREACH</em> is used to execute a modifying operation for each element of a coll, e.g. creating a node for each element using the element as an attribute value. 
+              </p>
+              <pre>START user=node:users(&quot;name:A*&quot;), promotion=node(...)<br>MATCH user-[:FRIEND]-friend-[:FRIEND]-foaf<br>WITH user, collect(distinct foaf) as new_friends<br>FOREACH (friend in new_friends : create user&lt;-[:SUGGESTION]-friend)</pre>
+            </div>
+            <div class="blk" id="with">
+              <h3>
+                 WITH 
+              </h3>
+              <p>
+                <em class="code">WITH</em> syntax is similar to <em class="code">RETURN</em>. It separates query parts explicitly, allowing you to declare which identifiers to carry over to the next part. This can be used to limit the visible identifiers but mostly for creating aggregate values that can be used in the next query part either for filtering (implementing the Cypher equivalent of HAVING) or for the creation of new structures in the graph. 
+              </p>
+              <p>
+                <em class="code">WITH</em> also creates a boundary between reading and updating query parts so that they don't interfere. 
+              </p>
+              <pre>START user=node:users(&quot;name:A*&quot;)<br>MATCH user-[:FRIEND]-friend<br>WITH user, count(friend) as friends<br>WHERE friends &gt; 10<br>RETURN user</pre><pre>START user=node:users(&quot;name:A*&quot;)<br>MATCH user-[:FRIEND]-friend<br>WITH user, count(friend) as friends<br>SET user.numberOfFriends = friends</pre>
+            </div>
+            <div class="blk" id="transactions">
+              <h3>
+                 Transactions 
+              </h3>
+              <p>
+                 The Neo4j-Shell supports commands to <em class="tx">begin</em> transactions, which allows you issue multiple commands and then only <em class="tx">commit</em> them when you're satisfied and <em class="tx">rollback</em> if you ran into an issue or don't want your changes to happen. 
+              </p>
+              <pre>neo4j-sh (0)$ <em class="tx">begin</em><br>==&gt; Transaction started<br>neo4j-sh (0)$ <em class="tx">rollback</em><br>==&gt; Transaction rolled back<br>neo4j-sh (0)$ <em class="tx">commit</em><br>==&gt; Transaction committed</pre>
+            </div>
+            <div class="blk" id="complex-graph">
+              <h3>
+                How to create a complex (complete) graph
+              </h3>
+              <p>
+                A root node is created, and used to hang a number of nodes from. I then match two nodes hanging from the center, with the requirement that the id of the first be less than the id of the next. This is to prevent double relationships and self relationships. Using said match, I create relationships between all the nodes Last comes the cheat - I remove the center node and all relationships connected to it. 
+              </p>
+              <img style="width: 300px; height: 300px" src="http://upload.wikimedia.org/wikipedia/commons/9/9e/Complete_graph_K7.svg"><pre><br>CREATE center<br>FOREACH( x in range(1,10) : <br>   CREATE leaf={count : x}, center-[:X]-&gt;leaf<br>)<br>WITH center<br>MATCH leaf1&lt;--center--&lt;leaf2<br>WHERE id(leaf1)&lt;id(leaf2)<br>CREATE leaf1-[:X]-&gt;leaf2<br>WITH center<br>MATCH center-[r]-&gt;()<br>DELETE center,r;<br></pre><a href="http://tinyurl.com/cznz46l">Live Test</a>
+            </div>
+          </div>
+          <div class="col rightCol">
+            <div class="blk" id="useful-snipplets">
+              <h2>
+                Useful Snippets
+              </h2>
+              <h3>
+                Not already connected to
+              </h3>
+              <pre>START n=node(...)<br>MATCH n--&gt;m--&gt;o<br>WHERE not ( n--&gt;o ) <br>RETURN o</pre><p>
+                This returns nodes that m is connected to, that n is not already connected to.
+              </p>
+              <h3>
+                Find Cycles
+              </h3>
+              <pre>START n=node(...)<br>MATCH path = n-[*..5]-n<br>RETURN n, length(path)</pre><p>
+                This returns nodes that have relationships looping back to themselves in no more than five hops, and the length of that loop.
+              </p>
+              <h3>
+                Group Count Relationship Types
+              </h3>
+              <pre>START n=node(...)<br>MATCH n-[r]-m<br>RETURN type(r), count(*)</pre><p>
+                Returns a count of each of the relationship-types.
+              </p>
+            </div>
+            <div class="blk" id="more-snipplets">
+              <h3>
+                Delete node with relationships
+              </h3>
+              <pre>START n=node(...)<br>MATCH n-[r?]-()<br>DELETE n,r</pre><p>
+                Finds the node and all relationships (if any) and deletes node and relationships.
+              </p>
+              <h3>
+                String concatenation on expressions
+              </h3>
+              <pre>START n = node(1), m = node(2) <br>RETURN n.name +&quot; and &quot;+ m.nam</pre>
+            </div>
+            <div class="blk" id="references">
+              <h3>
+                References
+              </h3>
+              <p>
+                 Screencast <a href="http://video.neo4j.org/">http://video.neo4j.org</a><br>
+                 Reference Manual: <a href="http://docs.neo4j.org/">http://docs.neo4j.org/</a><br>
+                 Presentations: <a href="http://www.slideshare.net/tag/cypher">http://www.slideshare.net/tag/cypher</a>
+              </p>
+            </div>
+          </div>
+          <div class="col twoCols">
+            <p>
+              <img src="images/cypher_graph.png">
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+    </footer>
+    <script>
+      <br>      <!--<br>var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];<br>(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];<br>g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';<br>s.parentNode.insertBefore(g,s)}(document,'script'));<br>//--><br>    
+    </script>
+  </body>
+</html>
